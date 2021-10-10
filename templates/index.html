@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Rice Crop Yield Prediction</title>
+    <link rel="stylesheet" href="{% static 'css/1.css' %}">
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/728d1d3dec.js" crossorigin="anonymous"></script>
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script></head>
+<body>
+    <div class="svgs">
+        <img src="{% static 'images/bg_svg.svg' %}">
+    </div>
+    <div class="page" id="part1">
+        <div class="info">
+            <div class="heading">
+                <div class="title text-primary">Rice Crop Yield Prediction</div>
+                <div class="title-support">using Random Forest</div>
+            </div>
+            <div class="dev">
+                <div class="text-primary">
+                    <i class="far fa-file-code"></i>&nbsp;Developed by:
+                </div>
+                <ul>
+                    <li>Ojas Daware</li>    
+                    <li>Deep Debnath</li>
+                    <li>Prathmesh Haware</li>
+                </ul>
+            </div>
+            <div class="btn-grp">
+                <a href="#part3" class="try">
+                    Try it!
+                </a>
+            </div>
+            
+        </div>
+        <div class="imgContainer">
+            <!-- <img src="imgs/farm1.jpg" alt=""> -->
+            <img src="{% static 'images/flowers.svg' %}" alt="">
+        </div>
+        <div class="scrollIndicator"></div>
+    </div>
+    <div class="page" id="part2">
+        <div class="card myCard">
+            <div class="myCard-img">
+                <img src="{% static 'images/input.svg' %}" alt="">
+            </div>
+            <div class="myCard-title text-blue">Enter details</div>
+            <div class="myCard-body ">Provide information for the crop like on which district it will be grown and the area of the farm</div>
+        </div>
+        <div class="card myCard">
+            <div class="myCard-img">
+                <img src="{% static 'images/weather.svg' %}" alt="">
+            </div>
+            <div class="myCard-title text-green">Live weather Fetch</div>
+            <div class="myCard-body ">Current weather details like the temperature, humidity, and precipitaion are fetched automatically from the internet to be used for prediction</div>
+        </div>
+        <div class="card myCard">
+            <div class="myCard-img">
+                <img src="{% static 'images/model.svg' %}" alt="">
+            </div>
+            <div class="myCard-title text-orange">Prediction</div>
+            <div class="myCard-body ">A Random Forest ML model, trained on past 20 years of data, is used to predict the approximate crop yield</div>
+        </div>
+        <div class="scrollIndicator"></div>
+    </div>
+    <div class="container p-5 page" id="part3">
+        <div class="imgContainer">
+            <img src="{% static 'images/plant.svg' %}" alt="">
+        </div>
+        <div class="card shadow-lg col-6 p-0 mx-auto">
+            <div class="card-header text-primary text-center">
+                <h3><u>Crop Yield Predictor</u></h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="district">District:</label>
+                    <select class="form-control" name="district" id="district"></select>
+                </div>
+                <div class="form-group">
+                    <label for="area">Area(in acres):</label>
+                    <input type="number" min="100" max="10000" class="form-control" id="area" placeholder="Enter area">
+                </div>
+                <div class="row">
+                    <button class="btn btn-primary mx-auto" id="submit">Predict</button>
+                </div>
+            </div>
+            <div class="card-footer" id="prediction">
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(()=>{
+            $('#submit').prop('disabled', true);
+            $('#prediction').hide();
+            var input_lists;
+            $.get("{% static 'misc/input.txt' %}", (data, status)=>{
+                input_lists = JSON.parse(data);
+            }).done(()=>{
+                let opts = '<option value="" selected hidden disabled>Select district</option>';
+                let dists = input_lists['districts'];
+                for(let i=0; i<dists.length; i++)
+                    opts += '<option value="'+dists[i]+'">'+dists[i]+'</option>';
+                $('#district').html(opts);
+            });
+        });
+        $('select').change(()=>{
+            var flag = 0;
+            if(!$('#district').val()){ flag = 1; }
+            if($('#area').val() == ""){ flag = 1; }
+            $('#submit').prop('disabled', flag);
+        })
+        $('input').keyup(()=>{
+            var flag = 0;
+            if(!$('#district').val()){ flag = 1; }
+            if($('#area').val() == ""){ flag = 1; }
+            $('#submit').prop('disabled', flag);
+        })
+        
+        $('#submit').click(()=>{
+            var district=$('#district').val();
+            var area=$('#area').val();
+            $.get("{% url 'predict' %}", {district:district,area:area},(data, status)=>{
+                res = data;
+            }).done(()=>{
+                $('#prediction').html('The yield prediction for rice crop is '+res+' tons');
+                $('#prediction').show();
+            });
+        })
+    </script>
+</body>
+</html>
