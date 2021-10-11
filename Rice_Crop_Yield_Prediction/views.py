@@ -70,3 +70,6 @@ def predict(request):
     prediction=model.predict((df))
     # print ("The yield prediction for rice crop is {} tons".format(prediction[0]))
     return HttpResponse(prediction[0])
+
+def model(request):
+    return render(request,"model.html")

@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.index,name='index'),
     path('predict',views.predict,name='predict'),
+    path('model/',views.model,name='model'),
 ]
