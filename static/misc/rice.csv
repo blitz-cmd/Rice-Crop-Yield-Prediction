@@ -1,4 +1,4 @@
-state_name,district_name,crop_year,season,crop,temperature,precipitaion,humidity,area,production
+state_name,district_name,crop_year,season,crop,temperature,precipitation,humidity,area,production
 Maharashtra,AHMEDNAGAR,1997,Kharif,Rice,24.243,42.3484,84,5900,7200
 Maharashtra,AHMEDNAGAR,1998,Kharif,Rice,23.1,8.7838,70,5600,7400
 Maharashtra,AHMEDNAGAR,1999,Kharif,Rice,22.8118,39.5078,35,5700,8000

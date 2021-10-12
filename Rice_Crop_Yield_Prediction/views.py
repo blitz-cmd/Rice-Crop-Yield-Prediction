@@ -1,9 +1,14 @@
+import matplotlib.pyplot as plt
+import seaborn as sb
+
 from django.http import HttpResponse
 from django.shortcuts import render
 import joblib
 import json
 import requests
 import pandas as pd
+import numpy as np
+
 # from pathlib import Path
 # BASE_DIR = Path(__file__).resolve().parent.parent
 # STATIC_DIR=BASE_DIR.joinpath('static')
@@ -38,7 +43,7 @@ def predict(request):
         humi=0
 
     #creating data input array
-    parameter=['temperature','precipitaion','humidity','area','AHMEDNAGAR','AKOLA','AMRAVATI','AURANGABAD','BEED','BHANDARA','BULDHANA','CHANDRAPUR','DHULE','GADCHIROLI','GONDIA','HINGOLI','JALGAON','JALNA','KOLHAPUR','LATUR','NAGPUR','NANDED','NANDURBAR','NASHIK','OSMANABAD','PALGHAR','PARBHANI','PUNE','RAIGAD','RATNAGIRI','SANGLI','SATARA','SINDHUDURG','SOLAPUR','THANE','WARDHA','WASHIM','YAVATMAL']
+    parameter=['temperature','precipitation','humidity','area','AHMEDNAGAR','AKOLA','AMRAVATI','AURANGABAD','BEED','BHANDARA','BULDHANA','CHANDRAPUR','DHULE','GADCHIROLI','GONDIA','HINGOLI','JALGAON','JALNA','KOLHAPUR','LATUR','NAGPUR','NANDED','NANDURBAR','NASHIK','OSMANABAD','PALGHAR','PARBHANI','PUNE','RAIGAD','RATNAGIRI','SANGLI','SATARA','SINDHUDURG','SOLAPUR','THANE','WARDHA','WASHIM','YAVATMAL']
     index_dict=dict(zip(parameter,range(len(parameter))))
     vect={}
     for key, val in index_dict.items():
@@ -59,7 +64,7 @@ def predict(request):
     except Exception as e:
         print("Exception occered for TEMPERATURE!", e)
     try:
-        vect['precipitaion'] = preci
+        vect['precipitation'] = preci
     except Exception as e:
         print("Exception occered for PRECIPITATION!", e)
     try:
@@ -71,5 +76,16 @@ def predict(request):
     # print ("The yield prediction for rice crop is {} tons".format(prediction[0]))
     return HttpResponse(prediction[0])
 
-def model(request):
-    return render(request,"model.html")
+def dashboard(request):
+    #importing the data and selecting the row
+    data=pd.read_csv('./static/misc/rice.csv')
+
+    #drop column that are not important
+    cols_to_drop=['state_name','crop_year','season','crop']
+    data=data.drop(cols_to_drop,axis=1)
+
+    data.production=data.production.fillna(0)
+
+    pairplot_chart=sb.pairplot(data,hue='humidity')
+    pairplot_chart.savefig("./static/graphs/pairplot.png")
+    return render(request,"model.html",{"img_name":"pairplot.png"})
