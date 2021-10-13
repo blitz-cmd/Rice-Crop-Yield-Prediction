@@ -3,5 +3,15 @@
 {% load static %}
 {% block body_block %}
 
+<h1>Scatter Plot</h1>
+{% autoescape off %}
+  {{ plot_div }}
+  {% endautoescape %}
+
+  <h1>Heatmap</h1>
+  {% autoescape off %}
+    {{ fig }}
+    {% endautoescape %}
+
 
 {% endblock %}

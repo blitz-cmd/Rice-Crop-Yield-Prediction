@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import seaborn as sb
-
 from django.http import HttpResponse
 from django.shortcuts import render
 import joblib
@@ -8,6 +7,17 @@ import json
 import requests
 import pandas as pd
 import numpy as np
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate,login,logout
+from django.http import HttpResponseRedirect,HttpResponse
+from django.urls import reverse,reverse_lazy
+from django.contrib.auth.decorators import login_required
+from plotly.offline import plot
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.graph_objs import Scatter
+
+
 
 # from pathlib import Path
 # BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,8 +86,19 @@ def predict(request):
     # print ("The yield prediction for rice crop is {} tons".format(prediction[0]))
     return HttpResponse(prediction[0])
 
+@login_required(login_url="admin/login/?next=/dashboard")
 def dashboard(request):
-    #importing the data and selecting the row
+    # #importing the data and selecting the row
+    # data=pd.read_csv('./static/misc/rice.csv')
+
+    # #drop column that are not important
+    # cols_to_drop=['state_name','crop_year','season','crop']
+    # data=data.drop(cols_to_drop,axis=1)
+
+    # data.production=data.production.fillna(0)
+
+    # pairplot_chart=sb.pairplot(data,hue='humidity')
+    # pairplot_chart.savefig("./static/graphs/pairplot.png")
     data=pd.read_csv('./static/misc/rice.csv')
 
     #drop column that are not important
@@ -85,7 +106,14 @@ def dashboard(request):
     data=data.drop(cols_to_drop,axis=1)
 
     data.production=data.production.fillna(0)
+    plot_div = plot([Scatter(x=data.temperature, y=data.humidity,
+                        mode='lines', name='test',
+                        opacity=0.8, marker_color='green')],
+               output_type='div')
+    # fig = go.Figure(data)
+    return render(request,"dashboard.html",context={'plot_div': plot_div})
 
-    pairplot_chart=sb.pairplot(data,hue='humidity')
-    pairplot_chart.savefig("./static/graphs/pairplot.png")
-    return render(request,"model.html",{"img_name":"pairplot.png"})
+@login_required(login_url="/")
+def logout(request):
+    logout(request)
+    return HttpResponseRedirect('index')
