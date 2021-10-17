@@ -86,19 +86,25 @@ def predict(request):
     # print ("The yield prediction for rice crop is {} tons".format(prediction[0]))
     return HttpResponse(prediction[0])
 
+def pairplot(data):
+    pairplot_chart=sb.pairplot(data,hue='humidity')
+    pairplot_chart.savefig("./static/graphs/pairplot.png")
+    pairplot_chart.figure.clf()
+
+def heatmap(data):    
+    out=data.corr()
+    heatmap=sb.heatmap(out,cmap='coolwarm',annot=True)
+    heatmap.figure.savefig("./static/graphs/heatmap.png")
+    heatmap.figure.clf()
+
+def regplot(data):
+    lregplot=sb.regplot(data.area,data.production,robust=True)
+    lregplot.figure.savefig("./static/graphs/lregplot.png") 
+    lregplot.figure.clf()
+
 @login_required(login_url="admin/login/?next=/dashboard")
 def dashboard(request):
-    # #importing the data and selecting the row
-    # data=pd.read_csv('./static/misc/rice.csv')
-
-    # #drop column that are not important
-    # cols_to_drop=['state_name','crop_year','season','crop']
-    # data=data.drop(cols_to_drop,axis=1)
-
-    # data.production=data.production.fillna(0)
-
-    # pairplot_chart=sb.pairplot(data,hue='humidity')
-    # pairplot_chart.savefig("./static/graphs/pairplot.png")
+    #importing the data and selecting the row
     data=pd.read_csv('./static/misc/rice.csv')
 
     #drop column that are not important
@@ -106,12 +112,25 @@ def dashboard(request):
     data=data.drop(cols_to_drop,axis=1)
 
     data.production=data.production.fillna(0)
-    plot_div = plot([Scatter(x=data.temperature, y=data.humidity,
-                        mode='lines', name='test',
-                        opacity=0.8, marker_color='green')],
-               output_type='div')
-    # fig = go.Figure(data)
-    return render(request,"dashboard.html",context={'plot_div': plot_div})
+
+    pairplot(data)
+    heatmap(data)
+    regplot(data)
+
+    # #pairplot graph
+    # pairplot_chart=sb.pairplot(data,hue='humidity')
+    # pairplot_chart.savefig("./static/graphs/pairplot.png")
+
+    #heatmap graph
+    # out=data.corr()
+    # heatmap=sb.heatmap(out,cmap='coolwarm',annot=True)
+    # heatmap.figure.savefig("./static/graphs/heatmap.png")
+
+    #regplot
+    # lregplot=sb.regplot(data.area,data.production,robust=True)
+    # lregplot.figure.savefig("./static/graphs/lregplot.png")
+
+    return render(request,"dashboard.html")
 
 @login_required(login_url="/")
 def logout(request):

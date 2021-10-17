@@ -3,15 +3,23 @@
 {% load static %}
 {% block body_block %}
 
-<h1>Scatter Plot</h1>
-{% autoescape off %}
-  {{ plot_div }}
-  {% endautoescape %}
+<div class="container">
+  <h1 style="color: black;">Pair Plot</h1><br>
+<img src="{% static 'graphs/pairplot.png' %}"></img>
+</div>
+<br><br>
 
-  <h1>Heatmap</h1>
-  {% autoescape off %}
-    {{ fig }}
-    {% endautoescape %}
+<div class="container">
+  <h1 style="color: black;">Heatmap</h1><br>
+<img style="height: 600px;width: 700px;" src="{% static 'graphs/heatmap.png' %}"></img>
+</div>
 
+<br><br>
+<div class="container">
+  <h1 style="color: black;">Linear Regression Plot</h1><br>
+<img style="height: 600px;width: 700px;" src="{% static 'graphs/lregplot.png' %}"></img>
+</div>
+
+<br><br>
 
 {% endblock %}
